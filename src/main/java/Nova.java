@@ -12,6 +12,8 @@ public class Nova {
             if (input.equals("bye")) {
                 System.out.println("Bye! See you next time.");
                 break;
+            } else {
+                System.out.println(input);
             }
         }
     }
