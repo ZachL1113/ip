@@ -36,14 +36,32 @@ public class Nova {
                 task.unmarkDone();
                 System.out.println("OK, I've marked this task as not done yet:");
                 System.out.println("  " + task);
-            } else {
-                Task task = new Task(input);
+            } else if (input.startsWith("todo ")) {
+                Task task = new Todo(input.substring(5));
                 tasks.add(task);
                 System.out.println(HORIZONTAL_LINE);
                 System.out.println("Got it. I've added this task:");
                 System.out.println("  " + task);
                 System.out.println("Now you have " + tasks.size() + " tasks in the list.");
                 System.out.println(HORIZONTAL_LINE);
+            } else if (input.startsWith("deadline ")) {
+                int byIndex = input.indexOf(" /by ");
+                String description = input.substring(9, byIndex);
+                String by = input.substring(byIndex + 5);
+                Task task = new Deadline(description, by);
+                tasks.add(task);
+                System.out.println("Got it. I've added this task:");
+                System.out.println("  " + task);
+            } else if (input.startsWith("event ")) {
+                int fromIndex = input.indexOf(" /from ");
+                int toIndex = input.indexOf(" /to ");
+                String description = input.substring(6, fromIndex);
+                String from = input.substring(fromIndex + 7, toIndex);
+                String to = input.substring(toIndex + 5);
+                Task task = new Event(description, from, to);
+                tasks.add(task);
+                System.out.println("Got it. I've added this task:");
+                System.out.println("  " + task);
             }
         }
     }
