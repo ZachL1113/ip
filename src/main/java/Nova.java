@@ -94,6 +94,12 @@ public class Nova {
                     task.unmarkDone();
                     System.out.println("OK, I've marked this task as not done yet:");
                     System.out.println("  " + task);
+                } else if (input.equals("delete") || input.startsWith("delete ")) {
+                    int taskNumber = parseTaskNumber(input, "delete", tasks.size());
+                    Task removedTask = tasks.remove(taskNumber - 1);
+                    System.out.println("Noted. I've removed this task:");
+                    System.out.println("  " + removedTask);
+                    System.out.println("Now you have " + tasks.size() + " tasks in the list.");
                 } else {
                     Task task = createTask(input);
                     tasks.add(task);
