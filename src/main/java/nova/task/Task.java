@@ -12,7 +12,7 @@ public abstract class Task {
      *
      * @param description Description of the task.
      */
-    public Task(String description) {
+    protected Task(String description) {
         this.description = description;
         this.isDone = false;
     }
