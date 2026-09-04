@@ -54,28 +54,31 @@ public class Nova {
             }
             case DEADLINE -> {
                 String deadlineDetails = input.substring(8).trim();
-                int byIndex = deadlineDetails.indexOf("/by");
-                if (byIndex < 0) {
+                String[] deadlineParts = deadlineDetails.split("\\s+/by\\s+", 2);
+                if (deadlineParts.length < 2) {
                     throw new NovaException("A deadline needs a /by date or time.");
                 }
-                String description = requireValue(deadlineDetails.substring(0, byIndex),
+                String description = requireValue(deadlineParts[0],
                         "A deadline needs a description.");
-                String by = requireValue(deadlineDetails.substring(byIndex + 3),
+                String by = requireValue(deadlineParts[1],
                         "A deadline needs a /by date or time.");
                 yield new Deadline(description, by);
             }
             case EVENT -> {
                 String eventDetails = input.substring(5).trim();
-                int fromIndex = eventDetails.indexOf("/from");
-                int toIndex = eventDetails.indexOf("/to");
-                if (fromIndex < 0 || toIndex < 0 || toIndex <= fromIndex) {
+                String[] fromParts = eventDetails.split("\\s+/from\\s+", 2);
+                if (fromParts.length < 2) {
                     throw new NovaException("An event needs /from and /to date or time values.");
                 }
-                String description = requireValue(eventDetails.substring(0, fromIndex),
+                String[] toParts = fromParts[1].split("\\s+/to\\s+", 2);
+                if (toParts.length < 2) {
+                    throw new NovaException("An event needs /from and /to date or time values.");
+                }
+                String description = requireValue(fromParts[0],
                         "An event needs a description.");
-                String from = requireValue(eventDetails.substring(fromIndex + 5, toIndex),
+                String from = requireValue(toParts[0],
                         "An event needs a /from date or time.");
-                String to = requireValue(eventDetails.substring(toIndex + 3),
+                String to = requireValue(toParts[1],
                         "An event needs a /to date or time.");
                 yield new Event(description, from, to);
             }
