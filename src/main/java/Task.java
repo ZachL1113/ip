@@ -1,4 +1,4 @@
-public class Task {
+public abstract class Task {
     private final String description;
     private boolean isDone;
 
@@ -15,8 +15,10 @@ public class Task {
         isDone = false;
     }
 
+    protected abstract String getTypeIcon();
+
     @Override
     public String toString() {
-        return "[" + (isDone ? "X" : " ") + "] " + description;
+        return "[" + getTypeIcon() + "][" + (isDone ? "X" : " ") + "] " + description;
     }
 }
