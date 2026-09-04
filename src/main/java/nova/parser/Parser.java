@@ -22,8 +22,13 @@ public class Parser {
         case "todo" -> Command.TODO;
         case "deadline" -> Command.DEADLINE;
         case "event" -> Command.EVENT;
+        case "find" -> Command.FIND;
         default -> Command.UNKNOWN;
         };
+    }
+
+    public String parseFindKeyword(String input) throws NovaException {
+        return requireValue(input.substring(4), "A find command needs a keyword.");
     }
 
     public int parseTaskNumber(String input, String command, int taskCount) throws NovaException {

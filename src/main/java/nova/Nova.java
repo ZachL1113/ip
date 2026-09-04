@@ -52,6 +52,9 @@ public class Nova {
         case LIST:
             ui.showTaskList(tasks);
             break;
+        case FIND:
+            ui.showMatchingTasks(tasks.find(parser.parseFindKeyword(input)));
+            break;
         case MARK:
             Task markedTask = tasks.mark(parser.parseTaskNumber(input, "mark", tasks.size()));
             storage.save(tasks.asList());

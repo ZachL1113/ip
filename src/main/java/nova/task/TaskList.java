@@ -3,6 +3,7 @@ package nova.task;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 public class TaskList {
     private final List<Task> tasks;
@@ -45,5 +46,16 @@ public class TaskList {
 
     public List<Task> asList() {
         return Collections.unmodifiableList(tasks);
+    }
+
+    public TaskList find(String keyword) {
+        String normalizedKeyword = keyword.toLowerCase(Locale.ROOT);
+        List<Task> matches = new ArrayList<>();
+        for (Task task : tasks) {
+            if (task.getDescription().toLowerCase(Locale.ROOT).contains(normalizedKeyword)) {
+                matches.add(task);
+            }
+        }
+        return new TaskList(matches);
     }
 }
