@@ -46,37 +46,37 @@ public class Nova {
 
     private boolean execute(Command command, String input) throws NovaException {
         switch (command) {
-        case BYE:
-            ui.showGoodbye();
-            return true;
-        case LIST:
-            ui.showTaskList(tasks);
-            break;
-        case MARK:
-            Task markedTask = tasks.mark(parser.parseTaskNumber(input, "mark", tasks.size()));
-            storage.save(tasks.asList());
-            ui.showMarked(markedTask);
-            break;
-        case UNMARK:
-            Task unmarkedTask = tasks.unmark(parser.parseTaskNumber(input, "unmark", tasks.size()));
-            storage.save(tasks.asList());
-            ui.showUnmarked(unmarkedTask);
-            break;
-        case DELETE:
-            Task removedTask = tasks.delete(parser.parseTaskNumber(input, "delete", tasks.size()));
-            storage.save(tasks.asList());
-            ui.showDeleted(removedTask, tasks.size());
-            break;
-        case TODO:
-        case DEADLINE:
-        case EVENT:
-            Task task = parser.parseTask(input, command);
-            tasks.add(task);
-            storage.save(tasks.asList());
-            ui.showAdded(task, tasks.size());
-            break;
-        default:
-            throw new NovaException("I'm sorry, but I don't know what that means.");
+            case BYE:
+                ui.showGoodbye();
+                return true;
+            case LIST:
+                ui.showTaskList(tasks);
+                break;
+            case MARK:
+                Task markedTask = tasks.mark(parser.parseTaskNumber(input, "mark", tasks.size()));
+                storage.save(tasks.asList());
+                ui.showMarked(markedTask);
+                break;
+            case UNMARK:
+                Task unmarkedTask = tasks.unmark(parser.parseTaskNumber(input, "unmark", tasks.size()));
+                storage.save(tasks.asList());
+                ui.showUnmarked(unmarkedTask);
+                break;
+            case DELETE:
+                Task removedTask = tasks.delete(parser.parseTaskNumber(input, "delete", tasks.size()));
+                storage.save(tasks.asList());
+                ui.showDeleted(removedTask, tasks.size());
+                break;
+            case TODO:
+            case DEADLINE:
+            case EVENT:
+                Task task = parser.parseTask(input, command);
+                tasks.add(task);
+                storage.save(tasks.asList());
+                ui.showAdded(task, tasks.size());
+                break;
+            default:
+                throw new NovaException("I'm sorry, but I don't know what that means.");
         }
         return false;
     }

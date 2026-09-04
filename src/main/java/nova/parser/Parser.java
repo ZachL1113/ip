@@ -14,15 +14,15 @@ public class Parser {
     public Command parseCommand(String input) {
         String[] parts = input.trim().split("\\s+", 2);
         return switch (parts[0]) {
-        case "bye" -> Command.BYE;
-        case "list" -> Command.LIST;
-        case "mark" -> Command.MARK;
-        case "unmark" -> Command.UNMARK;
-        case "delete" -> Command.DELETE;
-        case "todo" -> Command.TODO;
-        case "deadline" -> Command.DEADLINE;
-        case "event" -> Command.EVENT;
-        default -> Command.UNKNOWN;
+            case "bye" -> Command.BYE;
+            case "list" -> Command.LIST;
+            case "mark" -> Command.MARK;
+            case "unmark" -> Command.UNMARK;
+            case "delete" -> Command.DELETE;
+            case "todo" -> Command.TODO;
+            case "deadline" -> Command.DEADLINE;
+            case "event" -> Command.EVENT;
+            default -> Command.UNKNOWN;
         };
     }
 
@@ -42,10 +42,10 @@ public class Parser {
 
     public Task parseTask(String input, Command command) throws NovaException {
         return switch (command) {
-        case TODO -> new Todo(requireValue(input.substring(4), "A todo needs a description."));
-        case DEADLINE -> parseDeadline(input);
-        case EVENT -> parseEvent(input);
-        default -> throw new NovaException("I'm sorry, but I don't know what that means.");
+            case TODO -> new Todo(requireValue(input.substring(4), "A todo needs a description."));
+            case DEADLINE -> parseDeadline(input);
+            case EVENT -> parseEvent(input);
+            default -> throw new NovaException("I'm sorry, but I don't know what that means.");
         };
     }
 
