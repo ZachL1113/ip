@@ -9,7 +9,7 @@ public class Nova {
         System.out.println("Hello! I'm Nova.");
         System.out.println("What can I do for you?");
 
-        List<String> tasks = new ArrayList<>();
+        List<Task> tasks = new ArrayList<>();
         Scanner scanner = new Scanner(System.in);
         while (scanner.hasNextLine()) {
             String input = scanner.nextLine();
@@ -24,11 +24,24 @@ public class Nova {
                     System.out.println((i + 1) + ". " + tasks.get(i));
                 }
                 System.out.println(HORIZONTAL_LINE);
+            } else if (input.startsWith("mark ")) {
+                int taskNumber = Integer.parseInt(input.substring(5));
+                Task task = tasks.get(taskNumber - 1);
+                task.markDone();
+                System.out.println("Nice! I've marked this task as done:");
+                System.out.println("  " + task);
+            } else if (input.startsWith("unmark ")) {
+                int taskNumber = Integer.parseInt(input.substring(7));
+                Task task = tasks.get(taskNumber - 1);
+                task.unmarkDone();
+                System.out.println("OK, I've marked this task as not done yet:");
+                System.out.println("  " + task);
             } else {
-                tasks.add(input);
+                Task task = new Task(input);
+                tasks.add(task);
                 System.out.println(HORIZONTAL_LINE);
                 System.out.println("Got it. I've added this task:");
-                System.out.println("  " + input);
+                System.out.println("  " + task);
                 System.out.println("Now you have " + tasks.size() + " tasks in the list.");
                 System.out.println(HORIZONTAL_LINE);
             }
