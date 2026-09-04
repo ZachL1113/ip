@@ -1,6 +1,8 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 
 public class Nova {
     private static final String HORIZONTAL_LINE = "____________________________________________________________";
@@ -46,6 +48,14 @@ public class Nova {
         return trimmedValue;
     }
 
+    private static LocalDate parseDate(String value) throws NovaException {
+        try {
+            return LocalDate.parse(value);
+        } catch (DateTimeParseException exception) {
+            throw new NovaException("Please use the date format yyyy-MM-dd.");
+        }
+    }
+
     private static Task createTask(String input, Command command) throws NovaException {
         return switch (command) {
             case TODO -> {
@@ -62,7 +72,7 @@ public class Nova {
                         "A deadline needs a description.");
                 String by = requireValue(deadlineParts[1],
                         "A deadline needs a /by date or time.");
-                yield new Deadline(description, by);
+                yield new Deadline(description, parseDate(by));
             }
             case EVENT -> {
                 String eventDetails = input.substring(5).trim();
@@ -80,7 +90,7 @@ public class Nova {
                         "An event needs a /from date or time.");
                 String to = requireValue(toParts[1],
                         "An event needs a /to date or time.");
-                yield new Event(description, from, to);
+                yield new Event(description, parseDate(from), parseDate(to));
             }
             default -> throw new NovaException("I'm sorry, but I don't know what that means.");
         };
