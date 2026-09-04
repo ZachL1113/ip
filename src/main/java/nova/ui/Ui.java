@@ -1,4 +1,9 @@
+package nova.ui;
+
 import java.util.Scanner;
+
+import nova.task.Task;
+import nova.task.TaskList;
 
 public class Ui {
     private static final String HORIZONTAL_LINE =

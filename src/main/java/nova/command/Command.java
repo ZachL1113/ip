@@ -1,3 +1,5 @@
+package nova.command;
+
 public enum Command {
     BYE,
     LIST,
