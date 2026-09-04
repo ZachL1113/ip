@@ -7,4 +7,9 @@ public class Todo extends Task {
     protected String getTypeIcon() {
         return "T";
     }
+
+    @Override
+    public String toDataString() {
+        return "T | " + (isDone() ? "1" : "0") + " | " + getDescription();
+    }
 }

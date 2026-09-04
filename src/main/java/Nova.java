@@ -90,7 +90,14 @@ public class Nova {
         System.out.println("Hello! I'm Nova.");
         System.out.println("What can I do for you?");
 
-        List<Task> tasks = new ArrayList<>();
+        Storage storage = new Storage("data/nova.txt");
+        List<Task> tasks;
+        try {
+            tasks = storage.load();
+        } catch (NovaException exception) {
+            System.out.println("OOPS!!! " + exception.getMessage());
+            tasks = new ArrayList<>();
+        }
         Scanner scanner = new Scanner(System.in);
         while (scanner.hasNextLine()) {
             String input = scanner.nextLine();
@@ -114,6 +121,7 @@ public class Nova {
                         int taskNumber = parseTaskNumber(input, "mark", tasks.size());
                         Task task = tasks.get(taskNumber - 1);
                         task.markDone();
+                        storage.save(tasks);
                         System.out.println("Nice! I've marked this task as done:");
                         System.out.println("  " + task);
                     }
@@ -121,12 +129,14 @@ public class Nova {
                         int taskNumber = parseTaskNumber(input, "unmark", tasks.size());
                         Task task = tasks.get(taskNumber - 1);
                         task.unmarkDone();
+                        storage.save(tasks);
                         System.out.println("OK, I've marked this task as not done yet:");
                         System.out.println("  " + task);
                     }
                     case DELETE -> {
                         int taskNumber = parseTaskNumber(input, "delete", tasks.size());
                         Task removedTask = tasks.remove(taskNumber - 1);
+                        storage.save(tasks);
                         System.out.println("Noted. I've removed this task:");
                         System.out.println("  " + removedTask);
                         System.out.println("Now you have " + tasks.size() + " tasks in the list.");
@@ -134,6 +144,7 @@ public class Nova {
                     case TODO, DEADLINE, EVENT -> {
                         Task task = createTask(input, command);
                         tasks.add(task);
+                        storage.save(tasks);
                         System.out.println(HORIZONTAL_LINE);
                         System.out.println("Got it. I've added this task:");
                         System.out.println("  " + task);
