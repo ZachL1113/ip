@@ -15,6 +15,16 @@ public abstract class Task {
         isDone = false;
     }
 
+    public boolean isDone() {
+        return isDone;
+    }
+
+    protected String getDescription() {
+        return description;
+    }
+
+    public abstract String toDataString();
+
     protected abstract String getTypeIcon();
 
     @Override
