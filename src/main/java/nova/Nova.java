@@ -8,12 +8,20 @@ import nova.task.Task;
 import nova.task.TaskList;
 import nova.ui.Ui;
 
+/**
+ * Runs the Nova task-management chatbot.
+ */
 public class Nova {
     private final Parser parser;
     private final Storage storage;
     private final TaskList tasks;
     private final Ui ui;
 
+    /**
+     * Creates a Nova instance backed by the specified data file.
+     *
+     * @param filePath Path of the file used to store tasks.
+     */
     public Nova(String filePath) {
         parser = new Parser();
         storage = new Storage(filePath);
@@ -29,6 +37,9 @@ public class Nova {
         tasks = loadedTasks;
     }
 
+    /**
+     * Starts the command-processing loop.
+     */
     public void run() {
         ui.showWelcome();
         while (ui.hasNextCommand()) {
@@ -81,6 +92,11 @@ public class Nova {
         return false;
     }
 
+    /**
+     * Starts Nova using the default data-file location.
+     *
+     * @param args Command-line arguments; not used.
+     */
     public static void main(String[] args) {
         new Nova("data/nova.txt").run();
     }

@@ -10,7 +10,16 @@ import nova.task.Event;
 import nova.task.Task;
 import nova.task.Todo;
 
+/**
+ * Parses user input into commands and task data.
+ */
 public class Parser {
+    /**
+     * Returns the command type represented by the input.
+     *
+     * @param input Full user input.
+     * @return Parsed command type.
+     */
     public Command parseCommand(String input) {
         String[] parts = input.trim().split("\\s+", 2);
         return switch (parts[0]) {
@@ -26,6 +35,15 @@ public class Parser {
         };
     }
 
+    /**
+     * Returns a validated one-based task number.
+     *
+     * @param input Full user input.
+     * @param command Command word preceding the number.
+     * @param taskCount Number of available tasks.
+     * @return Validated task number.
+     * @throws NovaException If the number is missing, invalid, or out of range.
+     */
     public int parseTaskNumber(String input, String command, int taskCount) throws NovaException {
         String numberText = input.substring(command.length()).trim();
         int taskNumber;
@@ -40,6 +58,14 @@ public class Parser {
         return taskNumber;
     }
 
+    /**
+     * Returns a task parsed from an add command.
+     *
+     * @param input Full user input.
+     * @param command Type of task to create.
+     * @return Parsed task.
+     * @throws NovaException If required task details are missing or invalid.
+     */
     public Task parseTask(String input, Command command) throws NovaException {
         return switch (command) {
         case TODO -> new Todo(requireValue(input.substring(4), "A todo needs a description."));

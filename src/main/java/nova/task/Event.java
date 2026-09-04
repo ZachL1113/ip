@@ -4,6 +4,9 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
+/**
+ * Represents a task occurring over a date range.
+ */
 public class Event extends Task {
     private static final DateTimeFormatter OUTPUT_FORMAT =
             DateTimeFormatter.ofPattern("MMM dd yyyy", Locale.ENGLISH);
@@ -11,6 +14,13 @@ public class Event extends Task {
     private final LocalDate from;
     private final LocalDate to;
 
+    /**
+     * Creates an event task.
+     *
+     * @param description Description of the event.
+     * @param from Start date.
+     * @param to End date.
+     */
     public Event(String description, LocalDate from, LocalDate to) {
         super(description);
         this.from = from;
