@@ -31,8 +31,20 @@ public class Parser {
             case "todo" -> Command.TODO;
             case "deadline" -> Command.DEADLINE;
             case "event" -> Command.EVENT;
+            case "find" -> Command.FIND;
             default -> Command.UNKNOWN;
         };
+    }
+
+    /**
+     * Returns the keyword supplied to a find command.
+     *
+     * @param input Full user input.
+     * @return Search keyword.
+     * @throws NovaException If the keyword is missing.
+     */
+    public String parseFindKeyword(String input) throws NovaException {
+        return requireValue(input.substring(4), "A find command needs a keyword.");
     }
 
     /**

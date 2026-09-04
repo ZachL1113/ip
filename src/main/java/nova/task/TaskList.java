@@ -3,6 +3,7 @@ package nova.task;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Manages the tasks tracked by Nova.
@@ -95,5 +96,22 @@ public class TaskList {
      */
     public List<Task> asList() {
         return Collections.unmodifiableList(tasks);
+    }
+
+    /**
+     * Returns tasks whose descriptions contain the keyword, ignoring case.
+     *
+     * @param keyword Keyword to find.
+     * @return Matching tasks.
+     */
+    public TaskList find(String keyword) {
+        String normalizedKeyword = keyword.toLowerCase(Locale.ROOT);
+        List<Task> matches = new ArrayList<>();
+        for (Task task : tasks) {
+            if (task.getDescription().toLowerCase(Locale.ROOT).contains(normalizedKeyword)) {
+                matches.add(task);
+            }
+        }
+        return new TaskList(matches);
     }
 }
