@@ -1,5 +1,8 @@
 package nova.command;
 
+/**
+ * Represents a command supported by Nova.
+ */
 public enum Command {
     BYE,
     LIST,

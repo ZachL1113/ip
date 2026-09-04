@@ -4,12 +4,21 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
+/**
+ * Represents a task that must be completed by a date.
+ */
 public class Deadline extends Task {
     private static final DateTimeFormatter OUTPUT_FORMAT =
             DateTimeFormatter.ofPattern("MMM dd yyyy", Locale.ENGLISH);
 
     private final LocalDate by;
 
+    /**
+     * Creates a deadline task.
+     *
+     * @param description Description of the task.
+     * @param by Due date.
+     */
     public Deadline(String description, LocalDate by) {
         super(description);
         this.by = by;

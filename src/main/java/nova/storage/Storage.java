@@ -13,13 +13,27 @@ import nova.task.Event;
 import nova.task.Task;
 import nova.task.Todo;
 
+/**
+ * Loads tasks from and saves tasks to a local data file.
+ */
 public class Storage {
     private final Path filePath;
 
+    /**
+     * Creates a storage manager for the specified file.
+     *
+     * @param filePath Path of the task data file.
+     */
     public Storage(String filePath) {
         this.filePath = Path.of(filePath);
     }
 
+    /**
+     * Returns tasks loaded from the data file.
+     *
+     * @return Loaded tasks, or an empty list if the file does not exist.
+     * @throws NovaException If the data cannot be read or parsed.
+     */
     public List<Task> load() throws NovaException {
         List<Task> tasks = new ArrayList<>();
         if (!Files.exists(filePath)) {
@@ -36,6 +50,12 @@ public class Storage {
         }
     }
 
+    /**
+     * Saves all tasks to the data file.
+     *
+     * @param tasks Tasks to save.
+     * @throws NovaException If the data cannot be written.
+     */
     public void save(List<Task> tasks) throws NovaException {
         try {
             Path parent = filePath.getParent();
