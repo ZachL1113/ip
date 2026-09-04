@@ -5,6 +5,25 @@ import java.util.Scanner;
 public class Nova {
     private static final String HORIZONTAL_LINE = "____________________________________________________________";
 
+    private enum Command {
+        BYE, LIST, MARK, UNMARK, DELETE, TODO, DEADLINE, EVENT, UNKNOWN;
+
+        private static Command from(String input) {
+            String[] parts = input.trim().split("\\s+", 2);
+            return switch (parts[0]) {
+                case "bye" -> BYE;
+                case "list" -> LIST;
+                case "mark" -> MARK;
+                case "unmark" -> UNMARK;
+                case "delete" -> DELETE;
+                case "todo" -> TODO;
+                case "deadline" -> DEADLINE;
+                case "event" -> EVENT;
+                default -> UNKNOWN;
+            };
+        }
+    }
+
     private static int parseTaskNumber(String input, String command, int taskCount) throws NovaException {
         String numberText = input.substring(command.length()).trim();
         int taskNumber;
@@ -27,39 +46,41 @@ public class Nova {
         return trimmedValue;
     }
 
-    private static Task createTask(String input) throws NovaException {
-        if (input.equals("todo") || input.startsWith("todo ")) {
-            String description = requireValue(input.substring(4), "A todo needs a description.");
-            return new Todo(description);
-        }
-        if (input.equals("deadline") || input.startsWith("deadline ")) {
-            String details = input.substring(8).trim();
-            int byIndex = details.indexOf("/by");
-            if (byIndex < 0) {
-                throw new NovaException("A deadline needs a /by date or time.");
+    private static Task createTask(String input, Command command) throws NovaException {
+        return switch (command) {
+            case TODO -> {
+                String description = requireValue(input.substring(4), "A todo needs a description.");
+                yield new Todo(description);
             }
-            String description = requireValue(details.substring(0, byIndex),
-                    "A deadline needs a description.");
-            String by = requireValue(details.substring(byIndex + 3),
-                    "A deadline needs a /by date or time.");
-            return new Deadline(description, by);
-        }
-        if (input.equals("event") || input.startsWith("event ")) {
-            String details = input.substring(5).trim();
-            int fromIndex = details.indexOf("/from");
-            int toIndex = details.indexOf("/to");
-            if (fromIndex < 0 || toIndex < 0 || toIndex <= fromIndex) {
-                throw new NovaException("An event needs /from and /to date or time values.");
+            case DEADLINE -> {
+                String deadlineDetails = input.substring(8).trim();
+                int byIndex = deadlineDetails.indexOf("/by");
+                if (byIndex < 0) {
+                    throw new NovaException("A deadline needs a /by date or time.");
+                }
+                String description = requireValue(deadlineDetails.substring(0, byIndex),
+                        "A deadline needs a description.");
+                String by = requireValue(deadlineDetails.substring(byIndex + 3),
+                        "A deadline needs a /by date or time.");
+                yield new Deadline(description, by);
             }
-            String description = requireValue(details.substring(0, fromIndex),
-                    "An event needs a description.");
-            String from = requireValue(details.substring(fromIndex + 5, toIndex),
-                    "An event needs a /from date or time.");
-            String to = requireValue(details.substring(toIndex + 3),
-                    "An event needs a /to date or time.");
-            return new Event(description, from, to);
-        }
-        throw new NovaException("I'm sorry, but I don't know what that means.");
+            case EVENT -> {
+                String eventDetails = input.substring(5).trim();
+                int fromIndex = eventDetails.indexOf("/from");
+                int toIndex = eventDetails.indexOf("/to");
+                if (fromIndex < 0 || toIndex < 0 || toIndex <= fromIndex) {
+                    throw new NovaException("An event needs /from and /to date or time values.");
+                }
+                String description = requireValue(eventDetails.substring(0, fromIndex),
+                        "An event needs a description.");
+                String from = requireValue(eventDetails.substring(fromIndex + 5, toIndex),
+                        "An event needs a /from date or time.");
+                String to = requireValue(eventDetails.substring(toIndex + 3),
+                        "An event needs a /to date or time.");
+                yield new Event(description, from, to);
+            }
+            default -> throw new NovaException("I'm sorry, but I don't know what that means.");
+        };
     }
 
     public static void main(String[] args) {
@@ -72,42 +93,51 @@ public class Nova {
             String input = scanner.nextLine();
 
             try {
-                if (input.equals("bye")) {
-                    System.out.println("Bye! See you next time.");
-                    break;
-                } else if (input.equals("list")) {
-                    System.out.println(HORIZONTAL_LINE);
-                    System.out.println("Here are the tasks in your list:");
-                    for (int i = 0; i < tasks.size(); i++) {
-                        System.out.println((i + 1) + ". " + tasks.get(i));
+                Command command = Command.from(input);
+                switch (command) {
+                    case BYE -> {
+                        System.out.println("Bye! See you next time.");
+                        return;
                     }
-                    System.out.println(HORIZONTAL_LINE);
-                } else if (input.equals("mark") || input.startsWith("mark ")) {
-                    int taskNumber = parseTaskNumber(input, "mark", tasks.size());
-                    Task task = tasks.get(taskNumber - 1);
-                    task.markDone();
-                    System.out.println("Nice! I've marked this task as done:");
-                    System.out.println("  " + task);
-                } else if (input.equals("unmark") || input.startsWith("unmark ")) {
-                    int taskNumber = parseTaskNumber(input, "unmark", tasks.size());
-                    Task task = tasks.get(taskNumber - 1);
-                    task.unmarkDone();
-                    System.out.println("OK, I've marked this task as not done yet:");
-                    System.out.println("  " + task);
-                } else if (input.equals("delete") || input.startsWith("delete ")) {
-                    int taskNumber = parseTaskNumber(input, "delete", tasks.size());
-                    Task removedTask = tasks.remove(taskNumber - 1);
-                    System.out.println("Noted. I've removed this task:");
-                    System.out.println("  " + removedTask);
-                    System.out.println("Now you have " + tasks.size() + " tasks in the list.");
-                } else {
-                    Task task = createTask(input);
-                    tasks.add(task);
-                    System.out.println(HORIZONTAL_LINE);
-                    System.out.println("Got it. I've added this task:");
-                    System.out.println("  " + task);
-                    System.out.println("Now you have " + tasks.size() + " tasks in the list.");
-                    System.out.println(HORIZONTAL_LINE);
+                    case LIST -> {
+                        System.out.println(HORIZONTAL_LINE);
+                        System.out.println("Here are the tasks in your list:");
+                        for (int i = 0; i < tasks.size(); i++) {
+                            System.out.println((i + 1) + ". " + tasks.get(i));
+                        }
+                        System.out.println(HORIZONTAL_LINE);
+                    }
+                    case MARK -> {
+                        int taskNumber = parseTaskNumber(input, "mark", tasks.size());
+                        Task task = tasks.get(taskNumber - 1);
+                        task.markDone();
+                        System.out.println("Nice! I've marked this task as done:");
+                        System.out.println("  " + task);
+                    }
+                    case UNMARK -> {
+                        int taskNumber = parseTaskNumber(input, "unmark", tasks.size());
+                        Task task = tasks.get(taskNumber - 1);
+                        task.unmarkDone();
+                        System.out.println("OK, I've marked this task as not done yet:");
+                        System.out.println("  " + task);
+                    }
+                    case DELETE -> {
+                        int taskNumber = parseTaskNumber(input, "delete", tasks.size());
+                        Task removedTask = tasks.remove(taskNumber - 1);
+                        System.out.println("Noted. I've removed this task:");
+                        System.out.println("  " + removedTask);
+                        System.out.println("Now you have " + tasks.size() + " tasks in the list.");
+                    }
+                    case TODO, DEADLINE, EVENT -> {
+                        Task task = createTask(input, command);
+                        tasks.add(task);
+                        System.out.println(HORIZONTAL_LINE);
+                        System.out.println("Got it. I've added this task:");
+                        System.out.println("  " + task);
+                        System.out.println("Now you have " + tasks.size() + " tasks in the list.");
+                        System.out.println(HORIZONTAL_LINE);
+                    }
+                    default -> throw new NovaException("I'm sorry, but I don't know what that means.");
                 }
             } catch (NovaException exception) {
                 System.out.println("OOPS!!! " + exception.getMessage());
