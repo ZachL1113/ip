@@ -62,10 +62,9 @@ public class Storage {
             if (parent != null) {
                 Files.createDirectories(parent);
             }
-            List<String> lines = new ArrayList<>();
-            for (Task task : tasks) {
-                lines.add(task.toDataString());
-            }
+            List<String> lines = tasks.stream()
+                    .map(Task::toDataString)
+                    .toList();
             Files.write(filePath, lines);
         } catch (IOException exception) {
             throw new NovaException("I couldn't save the tasks.");
