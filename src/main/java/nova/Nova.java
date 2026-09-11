@@ -76,6 +76,7 @@ public class Nova {
             case BYE -> ui.getGoodbyeMessage();
             case LIST -> ui.getTaskListMessage(tasks);
             case FIND -> ui.getMatchingTasksMessage(tasks.find(parser.parseFindKeyword(input)));
+            case SORT -> sortTasks();
             case MARK -> markTask(input);
             case UNMARK -> unmarkTask(input);
             case DELETE -> deleteTask(input);
@@ -107,6 +108,12 @@ public class Nova {
         tasks.add(task);
         storage.save(tasks.asList());
         return ui.getAddedMessage(task, tasks.size());
+    }
+
+    private String sortTasks() throws NovaException {
+        tasks.sortByDescription();
+        storage.save(tasks.asList());
+        return "I've sorted your tasks alphabetically:\n" + ui.getTaskListMessage(tasks);
     }
 
     /**

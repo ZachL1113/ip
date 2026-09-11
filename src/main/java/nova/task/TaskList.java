@@ -2,6 +2,7 @@ package nova.task;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -91,6 +92,14 @@ public class TaskList {
         Task task = get(taskNumber);
         task.unmarkDone();
         return task;
+    }
+
+    /**
+     * Sorts tasks alphabetically by description, ignoring case.
+     */
+    public void sortByDescription() {
+        tasks.sort(Comparator.comparing(
+                task -> task.getDescription().toLowerCase(Locale.ROOT)));
     }
 
     /**
