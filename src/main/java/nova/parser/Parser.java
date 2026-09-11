@@ -14,6 +14,11 @@ import nova.task.Todo;
  * Parses user input into commands and task data.
  */
 public class Parser {
+    private static final String DEADLINE_DELIMITER = "\\s+/by\\s+";
+    private static final String EVENT_FROM_DELIMITER = "\\s+/from\\s+";
+    private static final String EVENT_TO_DELIMITER = "\\s+/to\\s+";
+    private static final String DATE_FORMAT_MESSAGE = "Please use the date format yyyy-MM-dd.";
+
     /**
      * Returns the command type represented by the input.
      *
@@ -44,7 +49,7 @@ public class Parser {
      * @throws NovaException If the keyword is missing.
      */
     public String parseFindKeyword(String input) throws NovaException {
-        return requireValue(input.substring(4), "A find command needs a keyword.");
+        return requireArgument(input, "find", "A find command needs a keyword.");
     }
 
     /**
@@ -57,7 +62,7 @@ public class Parser {
      * @throws NovaException If the number is missing, invalid, or out of range.
      */
     public int parseTaskNumber(String input, String command, int taskCount) throws NovaException {
-        String numberText = input.substring(command.length()).trim();
+        String numberText = requireArgument(input, command, "Please provide a valid task number.");
         int taskNumber;
         try {
             taskNumber = Integer.parseInt(numberText);
@@ -80,15 +85,17 @@ public class Parser {
      */
     public Task parseTask(String input, Command command) throws NovaException {
         return switch (command) {
-            case TODO -> new Todo(requireValue(input.substring(4), "A todo needs a description."));
-            case DEADLINE -> parseDeadline(input);
-            case EVENT -> parseEvent(input);
+            case TODO -> new Todo(requireArgument(input, "todo", "A todo needs a description."));
+            case DEADLINE -> parseDeadline(requireArgument(
+                    input, "deadline", "A deadline needs a description."));
+            case EVENT -> parseEvent(requireArgument(
+                    input, "event", "An event needs a description."));
             default -> throw new NovaException("I'm sorry, but I don't know what that means.");
         };
     }
 
-    private Task parseDeadline(String input) throws NovaException {
-        String[] parts = input.substring(8).trim().split("\\s+/by\\s+", 2);
+    private Task parseDeadline(String arguments) throws NovaException {
+        String[] parts = arguments.split(DEADLINE_DELIMITER, 2);
         if (parts.length < 2) {
             throw new NovaException("A deadline needs a /by date or time.");
         }
@@ -97,12 +104,12 @@ public class Parser {
         return new Deadline(description, parseDate(by));
     }
 
-    private Task parseEvent(String input) throws NovaException {
-        String[] fromParts = input.substring(5).trim().split("\\s+/from\\s+", 2);
+    private Task parseEvent(String arguments) throws NovaException {
+        String[] fromParts = arguments.split(EVENT_FROM_DELIMITER, 2);
         if (fromParts.length < 2) {
             throw new NovaException("An event needs /from and /to date or time values.");
         }
-        String[] toParts = fromParts[1].split("\\s+/to\\s+", 2);
+        String[] toParts = fromParts[1].split(EVENT_TO_DELIMITER, 2);
         if (toParts.length < 2) {
             throw new NovaException("An event needs /from and /to date or time values.");
         }
@@ -116,8 +123,13 @@ public class Parser {
         try {
             return LocalDate.parse(value);
         } catch (DateTimeParseException exception) {
-            throw new NovaException("Please use the date format yyyy-MM-dd.");
+            throw new NovaException(DATE_FORMAT_MESSAGE);
         }
+    }
+
+    private String requireArgument(String input, String command, String errorMessage)
+            throws NovaException {
+        return requireValue(input.substring(command.length()), errorMessage);
     }
 
     private String requireValue(String value, String errorMessage) throws NovaException {
