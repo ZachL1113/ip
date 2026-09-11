@@ -24,6 +24,7 @@ public class TaskList {
      * @param tasks Initial tasks.
      */
     public TaskList(List<Task> tasks) {
+        assert tasks != null : "Task list should not be null";
         this.tasks = new ArrayList<>(tasks);
     }
 
@@ -43,6 +44,7 @@ public class TaskList {
      * @return Selected task.
      */
     public Task get(int taskNumber) {
+        assert isValidTaskNumber(taskNumber) : "Task number should be within the list";
         return tasks.get(taskNumber - 1);
     }
 
@@ -52,6 +54,7 @@ public class TaskList {
      * @param task Task to add.
      */
     public void add(Task task) {
+        assert task != null : "Task to add should not be null";
         tasks.add(task);
     }
 
@@ -62,6 +65,7 @@ public class TaskList {
      * @return Deleted task.
      */
     public Task delete(int taskNumber) {
+        assert isValidTaskNumber(taskNumber) : "Task number should be within the list";
         return tasks.remove(taskNumber - 1);
     }
 
@@ -113,5 +117,9 @@ public class TaskList {
             }
         }
         return new TaskList(matches);
+    }
+
+    private boolean isValidTaskNumber(int taskNumber) {
+        return taskNumber >= 1 && taskNumber <= tasks.size();
     }
 }
