@@ -6,7 +6,7 @@ import nova.task.Task;
 import nova.task.TaskList;
 
 /**
- * Handles console input and output for Nova.
+ * Handles console input and formats user-facing messages for Nova.
  */
 public class Ui {
     private static final String HORIZONTAL_LINE =
@@ -40,104 +40,123 @@ public class Ui {
     }
 
     /**
-     * Shows the welcome message.
+     * Prints a response to the console.
+     *
+     * @param response Response to print.
      */
-    public void showWelcome() {
-        System.out.println("Hello! I'm Nova.");
-        System.out.println("What can I do for you?");
+    public void showResponse(String response) {
+        System.out.println(response);
     }
 
     /**
-     * Shows the goodbye message.
-     */
-    public void showGoodbye() {
-        System.out.println("Bye! See you next time.");
-    }
-
-    /**
-     * Shows a user-facing error message.
+     * Prints a formatted error message.
      *
      * @param message Explanation of the error.
      */
     public void showError(String message) {
-        System.out.println("OOPS!!! " + message);
+        showResponse(getErrorMessage(message));
     }
 
     /**
-     * Shows all tasks in the list.
+     * Returns the welcome message.
+     *
+     * @return Welcome message.
+     */
+    public String getWelcomeMessage() {
+        return "Hello! I'm Nova.\nWhat can I do for you?";
+    }
+
+    /**
+     * Returns the goodbye message.
+     *
+     * @return Goodbye message.
+     */
+    public String getGoodbyeMessage() {
+        return "Bye! See you next time.";
+    }
+
+    /**
+     * Returns a formatted user-facing error message.
+     *
+     * @param message Explanation of the error.
+     * @return Formatted error message.
+     */
+    public String getErrorMessage(String message) {
+        return "OOPS!!! " + message;
+    }
+
+    /**
+     * Returns a formatted list of all tasks.
      *
      * @param tasks Tasks to show.
+     * @return Formatted task-list message.
      */
-    public void showTaskList(TaskList tasks) {
-        showLine();
-        System.out.println("Here are the tasks in your list:");
-        for (int i = 1; i <= tasks.size(); i++) {
-            System.out.println(i + ". " + tasks.get(i));
-        }
-        showLine();
+    public String getTaskListMessage(TaskList tasks) {
+        return formatTaskList("Here are the tasks in your list:", tasks);
     }
 
     /**
-     * Shows tasks that match a search keyword.
+     * Returns a formatted list of matching tasks.
      *
      * @param tasks Matching tasks.
+     * @return Formatted matching-task message.
      */
-    public void showMatchingTasks(TaskList tasks) {
-        showLine();
-        System.out.println("Here are the matching tasks in your list:");
-        for (int i = 1; i <= tasks.size(); i++) {
-            System.out.println(i + ". " + tasks.get(i));
-        }
-        showLine();
+    public String getMatchingTasksMessage(TaskList tasks) {
+        return formatTaskList("Here are the matching tasks in your list:", tasks);
     }
 
     /**
-     * Shows a task that was marked as completed.
+     * Returns a message for a task marked as completed.
      *
      * @param task Marked task.
+     * @return Formatted message.
      */
-    public void showMarked(Task task) {
-        System.out.println("Nice! I've marked this task as done:");
-        System.out.println("  " + task);
+    public String getMarkedMessage(Task task) {
+        return "Nice! I've marked this task as done:\n  " + task;
     }
 
     /**
-     * Shows a task that was marked as incomplete.
+     * Returns a message for a task marked as incomplete.
      *
      * @param task Unmarked task.
+     * @return Formatted message.
      */
-    public void showUnmarked(Task task) {
-        System.out.println("OK, I've marked this task as not done yet:");
-        System.out.println("  " + task);
+    public String getUnmarkedMessage(Task task) {
+        return "OK, I've marked this task as not done yet:\n  " + task;
     }
 
     /**
-     * Shows a deleted task and the remaining task count.
+     * Returns a message for a deleted task.
      *
      * @param task Deleted task.
      * @param taskCount Number of remaining tasks.
+     * @return Formatted message.
      */
-    public void showDeleted(Task task, int taskCount) {
-        System.out.println("Noted. I've removed this task:");
-        System.out.println("  " + task);
-        System.out.println("Now you have " + taskCount + " tasks in the list.");
+    public String getDeletedMessage(Task task, int taskCount) {
+        return "Noted. I've removed this task:\n  " + task
+                + "\nNow you have " + taskCount + " tasks in the list.";
     }
 
     /**
-     * Shows an added task and the updated task count.
+     * Returns a message for an added task.
      *
      * @param task Added task.
      * @param taskCount Updated task count.
+     * @return Formatted message.
      */
-    public void showAdded(Task task, int taskCount) {
-        showLine();
-        System.out.println("Got it. I've added this task:");
-        System.out.println("  " + task);
-        System.out.println("Now you have " + taskCount + " tasks in the list.");
-        showLine();
+    public String getAddedMessage(Task task, int taskCount) {
+        return "Got it. I've added this task:\n  " + task
+                + "\nNow you have " + taskCount + " tasks in the list.";
     }
 
-    private void showLine() {
-        System.out.println(HORIZONTAL_LINE);
+    private String formatTaskList(String heading, TaskList tasks) {
+        StringBuilder message = new StringBuilder();
+        message.append(HORIZONTAL_LINE).append(System.lineSeparator());
+        message.append(heading).append(System.lineSeparator());
+        for (int i = 1; i <= tasks.size(); i++) {
+            message.append(i).append(". ").append(tasks.get(i)).append(System.lineSeparator());
+        }
+        message.append(HORIZONTAL_LINE);
+        return message.toString();
     }
 }
