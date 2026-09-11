@@ -37,6 +37,7 @@ public class Parser {
             case "deadline" -> Command.DEADLINE;
             case "event" -> Command.EVENT;
             case "find" -> Command.FIND;
+            case "sort" -> Command.SORT;
             default -> Command.UNKNOWN;
         };
     }
