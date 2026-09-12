@@ -55,7 +55,7 @@ jobs:
           git tag A-JavaDoc 41b8ffb580ae5821216863343eb11a9d74da068a
           git tag A-CodingStandard 8267bb7cd58c6dac48b0df78c60e946c6090d25c
           git tag Level-9 12341e596e2284b153fe2e142ec65a3271c4481a
-          git tag Level-10 a8bc5d84bad2a53e2e142ec65a3271c4481a
+          git tag Level-10 a8bc5d84bad2a53e2de690dac765d5aa4fc7ed8e
           git tag A-FullCommitMessage b0bfe99195b1e31d1279585d77e588b840bda4d4
           git tag A-Assertions 88ea287a92f2ef1a4945f5aaacfcfe84ddaaa848
           git tag A-CodeQuality 2a9ad9514453387d8580ab9d410ef4e68fca28f5
