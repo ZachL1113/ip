@@ -154,7 +154,7 @@ public class Ui {
         message.append(HORIZONTAL_LINE).append(System.lineSeparator());
         message.append(heading).append(System.lineSeparator());
         for (int i = 1; i <= tasks.size(); i++) {
-            message.append(i).append(". ").append(tasks.get(i)).append(System.lineSeparator());
+            message.append(i).append(". ").append(tasks.getByTaskNumber(i)).append(System.lineSeparator());
         }
         message.append(HORIZONTAL_LINE);
         return message.toString();
