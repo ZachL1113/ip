@@ -87,32 +87,32 @@ public class Nova {
 
     private String markTask(String input) throws NovaException {
         Task task = tasks.mark(parser.parseTaskNumber(input, "mark", tasks.size()));
-        storage.save(tasks.asList());
+        storage.save(tasks.getTasksView());
         return ui.getMarkedMessage(task);
     }
 
     private String unmarkTask(String input) throws NovaException {
         Task task = tasks.unmark(parser.parseTaskNumber(input, "unmark", tasks.size()));
-        storage.save(tasks.asList());
+        storage.save(tasks.getTasksView());
         return ui.getUnmarkedMessage(task);
     }
 
     private String deleteTask(String input) throws NovaException {
         Task task = tasks.delete(parser.parseTaskNumber(input, "delete", tasks.size()));
-        storage.save(tasks.asList());
+        storage.save(tasks.getTasksView());
         return ui.getDeletedMessage(task, tasks.size());
     }
 
     private String addTask(String input, Command command) throws NovaException {
         Task task = parser.parseTask(input, command);
         tasks.add(task);
-        storage.save(tasks.asList());
+        storage.save(tasks.getTasksView());
         return ui.getAddedMessage(task, tasks.size());
     }
 
     private String sortTasks() throws NovaException {
         tasks.sortByDescription();
-        storage.save(tasks.asList());
+        storage.save(tasks.getTasksView());
         return "I've sorted your tasks alphabetically:\n" + ui.getTaskListMessage(tasks);
     }
 

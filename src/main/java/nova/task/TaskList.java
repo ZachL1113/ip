@@ -44,7 +44,7 @@ public class TaskList {
      * @param taskNumber One-based task number.
      * @return Selected task.
      */
-    public Task get(int taskNumber) {
+    public Task getByTaskNumber(int taskNumber) {
         assert isValidTaskNumber(taskNumber) : "Task number should be within the list";
         return tasks.get(taskNumber - 1);
     }
@@ -77,7 +77,7 @@ public class TaskList {
      * @return Marked task.
      */
     public Task mark(int taskNumber) {
-        Task task = get(taskNumber);
+        Task task = getByTaskNumber(taskNumber);
         task.markDone();
         return task;
     }
@@ -89,7 +89,7 @@ public class TaskList {
      * @return Unmarked task.
      */
     public Task unmark(int taskNumber) {
-        Task task = get(taskNumber);
+        Task task = getByTaskNumber(taskNumber);
         task.unmarkDone();
         return task;
     }
@@ -107,7 +107,7 @@ public class TaskList {
      *
      * @return Unmodifiable task list.
      */
-    public List<Task> asList() {
+    public List<Task> getTasksView() {
         return Collections.unmodifiableList(tasks);
     }
 

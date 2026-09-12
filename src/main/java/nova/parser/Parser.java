@@ -57,13 +57,13 @@ public class Parser {
      * Returns a validated one-based task number.
      *
      * @param input Full user input.
-     * @param command Command word preceding the number.
+     * @param commandWord Command word preceding the number.
      * @param taskCount Number of available tasks.
      * @return Validated task number.
      * @throws NovaException If the number is missing, invalid, or out of range.
      */
-    public int parseTaskNumber(String input, String command, int taskCount) throws NovaException {
-        String numberText = requireArgument(input, command, "Please provide a valid task number.");
+    public int parseTaskNumber(String input, String commandWord, int taskCount) throws NovaException {
+        String numberText = requireArgument(input, commandWord, "Please provide a valid task number.");
         int taskNumber;
         try {
             taskNumber = Integer.parseInt(numberText);
@@ -100,9 +100,9 @@ public class Parser {
         if (parts.length < 2) {
             throw new NovaException("A deadline needs a /by date or time.");
         }
-        String description = requireValue(parts[0], "A deadline needs a description.");
-        String by = requireValue(parts[1], "A deadline needs a /by date or time.");
-        return new Deadline(description, parseDate(by));
+        String description = requireNonBlank(parts[0], "A deadline needs a description.");
+        String dueDate = requireNonBlank(parts[1], "A deadline needs a /by date or time.");
+        return new Deadline(description, parseDate(dueDate));
     }
 
     private Task parseEvent(String arguments) throws NovaException {
@@ -114,9 +114,9 @@ public class Parser {
         if (toParts.length < 2) {
             throw new NovaException("An event needs /from and /to date or time values.");
         }
-        String description = requireValue(fromParts[0], "An event needs a description.");
-        String from = requireValue(toParts[0], "An event needs a /from date or time.");
-        String to = requireValue(toParts[1], "An event needs a /to date or time.");
+        String description = requireNonBlank(fromParts[0], "An event needs a description.");
+        String from = requireNonBlank(toParts[0], "An event needs a /from date or time.");
+        String to = requireNonBlank(toParts[1], "An event needs a /to date or time.");
         return new Event(description, parseDate(from), parseDate(to));
     }
 
@@ -128,12 +128,12 @@ public class Parser {
         }
     }
 
-    private String requireArgument(String input, String command, String errorMessage)
+    private String requireArgument(String input, String commandWord, String errorMessage)
             throws NovaException {
-        return requireValue(input.substring(command.length()), errorMessage);
+        return requireNonBlank(input.substring(commandWord.length()), errorMessage);
     }
 
-    private String requireValue(String value, String errorMessage) throws NovaException {
+    private String requireNonBlank(String value, String errorMessage) throws NovaException {
         String trimmedValue = value.trim();
         if (trimmedValue.isEmpty()) {
             throw new NovaException(errorMessage);

@@ -71,6 +71,12 @@ public class Storage {
         }
     }
 
+    /**
+     * Parses a task stored as {@code type | status | description [| date...]}.
+     *
+     * @param line Serialized task data.
+     * @return Parsed task.
+     */
     private Task parseTask(String line) {
         String[] parts = line.split(" \\| ");
         if (parts.length < 3) {

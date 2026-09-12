@@ -16,8 +16,8 @@ public class TaskListTest {
 
         tasks.sortByDescription();
 
-        assertEquals("[T][ ] attend meeting", tasks.get(1).toString());
-        assertEquals("[T][ ] Buy milk", tasks.get(2).toString());
-        assertEquals("[T][ ] write report", tasks.get(3).toString());
+        assertEquals("[T][ ] attend meeting", tasks.getByTaskNumber(1).toString());
+        assertEquals("[T][ ] Buy milk", tasks.getByTaskNumber(2).toString());
+        assertEquals("[T][ ] write report", tasks.getByTaskNumber(3).toString());
     }
 }
