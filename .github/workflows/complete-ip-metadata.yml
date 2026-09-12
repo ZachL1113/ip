@@ -1,0 +1,75 @@
+name: Complete iP metadata and release
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+      - '.github/workflows/complete-ip-metadata.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  complete:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: zulu
+          java-version: '25'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build and test fat JAR
+        run: |
+          chmod +x gradlew
+          ./gradlew clean test shadowJar
+          test "$(stat -c%s build/libs/nova.jar)" -gt 5000000
+          unzip -p build/libs/nova.jar META-INF/MANIFEST.MF | grep -q 'Main-Class: nova.Launcher'
+
+      - name: Create lightweight increment tags
+        run: |
+          git tag Level-2 354aa8c2e0c3e456fa1d3ada387431eae4678e2e
+          git tag A-Classes 98fe32cdd23c9d415322cf993076172e3549dbca
+          git tag Level-3 6e75ac1a0d37b04d35cce2a5379995fd3deacd1f
+          git tag A-Inheritance cc0180ed76ef5f94e9eed52ac1d33a2893bf1756
+          git tag Level-4 39e67a4371be578d186503647f925ba4a5829fc8
+          git tag Level-5 15098d80db46fca5880c45cedc8e36a5a60bacf4
+          git tag Level-6 eeb758f66bd83f093dda1fd9f54bb23d95ffed92
+          git tag A-Enums a799c9cc904894650ac071b3e3abd8f63dbbb6df
+          git tag Level-7 9f2f978d083afd1d7c2b3b1a04431ce7642329c8
+          git tag Level-8 b0d15ddd3a0bb170bcf8d0fdddeb4e097f064e1d
+          git tag A-MoreOOP 53c672df4254f951aab647fac5d028b4f13ff2c1
+          git tag A-Packages c02d07b659f54777d5a28bc6e220a2390ed70b73
+          git tag A-Gradle 4212f9615a8f7e1f0e70e3a2d8523b6734e116e1
+          git tag A-JUnit ff0377dc2eb689293bb9d957fd4f37c4bf305e22
+          git tag A-Jar bacbe23e3a5ea91f104b37c310b09d35142091f6
+          git tag A-JavaDoc 41b8ffb580ae5821216863343eb11a9d74da068a
+          git tag A-CodingStandard 8267bb7cd58c6dac48b0df78c60e946c6090d25c
+          git tag Level-9 12341e596e2284b153fe2e142ec65a3271c4481a
+          git tag Level-10 a8bc5d84bad2a53e2e142ec65a3271c4481a
+          git tag A-FullCommitMessage b0bfe99195b1e31d1279585d77e588b840bda4d4
+          git tag A-Assertions 88ea287a92f2ef1a4945f5aaacfcfe84ddaaa848
+          git tag A-CodeQuality 2a9ad9514453387d8580ab9d410ef4e68fca28f5
+          git tag A-Streams 5b311bf90f206ba805928605d9be3703edec87f4
+          git tag A-CI 70b791408df333ad2786baa729f742499a2c0b6a
+          git tag BCD-Extension c4c2ba136185d1aa430f3937246e872c6e8fbd64
+          git push origin Level-2 A-Classes Level-3 A-Inheritance Level-4 Level-5 Level-6 A-Enums Level-7 Level-8 A-MoreOOP A-Packages A-Gradle A-JUnit A-Jar A-JavaDoc A-CodingStandard Level-9 Level-10 A-FullCommitMessage A-Assertions A-CodeQuality A-Streams A-CI BCD-Extension
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view v0.1 >/dev/null 2>&1; then
+            gh release upload v0.1 build/libs/nova.jar --clobber
+          else
+            gh release create v0.1 build/libs/nova.jar --target master --title 'Nova v0.1' --notes 'Executable cross-platform fat JAR for the CS2103T iP.'
+          fi
