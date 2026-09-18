@@ -33,4 +33,19 @@ public class ParserTest {
         assertThrows(NovaException.class, () -> parser.parseTask(
                 "deadline submit report /by Friday", Command.DEADLINE));
     }
+
+    @Test
+    public void parseTask_eventEndOnOrBeforeStart_throwsException() {
+        assertThrows(NovaException.class, () -> parser.parseTask(
+                "event demo /from 2026-09-06 /to 2026-09-05", Command.EVENT));
+        assertThrows(NovaException.class, () -> parser.parseTask(
+                "event demo /from 2026-09-05 /to 2026-09-05", Command.EVENT));
+    }
+
+    @Test
+    public void parseTaskNumber_invalidNumber_throwsException() {
+        assertThrows(NovaException.class, () -> parser.parseTaskNumber("mark zero", "mark", 3));
+        assertThrows(NovaException.class, () -> parser.parseTaskNumber("mark 0", "mark", 3));
+        assertThrows(NovaException.class, () -> parser.parseTaskNumber("mark 4", "mark", 3));
+    }
 }

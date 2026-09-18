@@ -1,8 +1,11 @@
 package nova.storage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.List;
@@ -36,6 +39,43 @@ public class StorageTest {
         assertEquals(todo.toDataString(), loadedTasks.get(0).toDataString());
         assertEquals(deadline.toDataString(), loadedTasks.get(1).toDataString());
         assertEquals(event.toDataString(), loadedTasks.get(2).toDataString());
+    }
+
+    @Test
+    public void saveAndLoad_descriptionContainingDelimiter_preservesDescription()
+            throws NovaException {
+        Storage storage = new Storage(temporaryDirectory.resolve("tasks.txt").toString());
+        List<Task> tasks = List.of(
+                new Todo("compare A | B"),
+                new Deadline("choose A | B", LocalDate.parse("2026-09-05")),
+                new Event("meeting A | B", LocalDate.parse("2026-09-06"),
+                        LocalDate.parse("2026-09-07")));
+
+        storage.save(tasks);
+        List<Task> loadedTasks = storage.load();
+
+        assertEquals(tasks.size(), loadedTasks.size());
+        for (int i = 0; i < tasks.size(); i++) {
+            assertEquals(tasks.get(i).toDataString(), loadedTasks.get(i).toDataString());
+        }
+    }
+
+    @Test
+    public void load_corruptedEvent_throwsNovaException() throws IOException {
+        Path file = temporaryDirectory.resolve("tasks.txt");
+        Files.writeString(file, "E | 0 | demo | 2026-09-05");
+        Storage storage = new Storage(file.toString());
+
+        assertThrows(NovaException.class, storage::load);
+    }
+
+    @Test
+    public void load_invalidStatus_throwsNovaException() throws IOException {
+        Path file = temporaryDirectory.resolve("tasks.txt");
+        Files.writeString(file, "T | maybe | read book");
+        Storage storage = new Storage(file.toString());
+
+        assertThrows(NovaException.class, storage::load);
     }
 
     @Test
