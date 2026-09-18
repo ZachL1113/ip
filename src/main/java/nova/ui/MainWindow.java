@@ -15,6 +15,8 @@ import nova.Nova;
  * Controller for Nova's main JavaFX window.
  */
 public class MainWindow {
+    private static final String ERROR_PREFIX = "OOPS!!!";
+
     @FXML
     private ScrollPane scrollPane;
     @FXML
@@ -41,7 +43,7 @@ public class MainWindow {
      */
     public void setNova(Nova nova) {
         this.nova = nova;
-        addNovaDialog("Hello! I'm Nova.\nWhat can I do for you?");
+        addNovaDialog("Hello! I'm Nova.\nWhat can I do for you?", false);
     }
 
     /**
@@ -55,7 +57,8 @@ public class MainWindow {
         }
 
         addUserDialog(input);
-        addNovaDialog(nova.getResponse(input));
+        String response = nova.getResponse(input);
+        addNovaDialog(response, response.startsWith(ERROR_PREFIX));
         userInput.clear();
 
         if (input.equals("bye")) {
@@ -67,8 +70,9 @@ public class MainWindow {
         dialogContainer.getChildren().add(createDialog("You", text, Pos.CENTER_RIGHT, "user-dialog"));
     }
 
-    private void addNovaDialog(String text) {
-        dialogContainer.getChildren().add(createDialog("Nova", text, Pos.CENTER_LEFT, "nova-dialog"));
+    private void addNovaDialog(String text, boolean isError) {
+        String styleClass = isError ? "error-dialog" : "nova-dialog";
+        dialogContainer.getChildren().add(createDialog("Nova", text, Pos.CENTER_LEFT, styleClass));
     }
 
     private HBox createDialog(String speaker, String text, Pos alignment, String styleClass) {
