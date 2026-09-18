@@ -17,6 +17,8 @@ import nova.task.Todo;
  * Loads tasks from and saves tasks to a local data file.
  */
 public class Storage {
+    private static final String DELIMITER = " | ";
+
     private final Path filePath;
 
     /**
@@ -45,7 +47,7 @@ public class Storage {
                 tasks.add(parseTask(line));
             }
             return tasks;
-        } catch (IOException | IllegalArgumentException exception) {
+        } catch (IOException | RuntimeException exception) {
             throw new NovaException("I couldn't load the saved tasks.");
         }
     }
@@ -78,20 +80,58 @@ public class Storage {
      * @return Parsed task.
      */
     private Task parseTask(String line) {
-        String[] parts = line.split(" \\| ");
-        if (parts.length < 3) {
+        String[] headerParts = line.split(" \\| ", 3);
+        if (headerParts.length != 3
+                || (!headerParts[1].equals("0") && !headerParts[1].equals("1"))) {
             throw new IllegalArgumentException("Invalid saved task");
         }
 
-        Task task = switch (parts[0]) {
-            case "T" -> new Todo(parts[2]);
-            case "D" -> new Deadline(parts[2], LocalDate.parse(parts[3]));
-            case "E" -> new Event(parts[2], LocalDate.parse(parts[3]), LocalDate.parse(parts[4]));
+        Task task = switch (headerParts[0]) {
+            case "T" -> new Todo(requireDescription(headerParts[2]));
+            case "D" -> parseDeadline(headerParts[2]);
+            case "E" -> parseEvent(headerParts[2]);
             default -> throw new IllegalArgumentException("Unknown task type");
         };
-        if (parts[1].equals("1")) {
+        if (headerParts[1].equals("1")) {
             task.markDone();
         }
         return task;
+    }
+
+    private Task parseDeadline(String taskData) {
+        int dateSeparator = taskData.lastIndexOf(DELIMITER);
+        if (dateSeparator <= 0 || dateSeparator + DELIMITER.length() >= taskData.length()) {
+            throw new IllegalArgumentException("Invalid saved deadline");
+        }
+
+        String description = requireDescription(taskData.substring(0, dateSeparator));
+        LocalDate dueDate = LocalDate.parse(taskData.substring(dateSeparator + DELIMITER.length()));
+        return new Deadline(description, dueDate);
+    }
+
+    private Task parseEvent(String taskData) {
+        int toSeparator = taskData.lastIndexOf(DELIMITER);
+        int fromSeparator = taskData.lastIndexOf(DELIMITER, toSeparator - 1);
+        if (fromSeparator <= 0
+                || toSeparator <= fromSeparator + DELIMITER.length()
+                || toSeparator + DELIMITER.length() >= taskData.length()) {
+            throw new IllegalArgumentException("Invalid saved event");
+        }
+
+        String description = requireDescription(taskData.substring(0, fromSeparator));
+        LocalDate from = LocalDate.parse(
+                taskData.substring(fromSeparator + DELIMITER.length(), toSeparator));
+        LocalDate to = LocalDate.parse(taskData.substring(toSeparator + DELIMITER.length()));
+        if (!to.isAfter(from)) {
+            throw new IllegalArgumentException("Invalid saved event date range");
+        }
+        return new Event(description, from, to);
+    }
+
+    private String requireDescription(String description) {
+        if (description.isBlank()) {
+            throw new IllegalArgumentException("Missing task description");
+        }
+        return description;
     }
 }

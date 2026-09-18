@@ -117,7 +117,13 @@ public class Parser {
         String description = requireNonBlank(fromParts[0], "An event needs a description.");
         String from = requireNonBlank(toParts[0], "An event needs a /from date or time.");
         String to = requireNonBlank(toParts[1], "An event needs a /to date or time.");
-        return new Event(description, parseDate(from), parseDate(to));
+
+        LocalDate startDate = parseDate(from);
+        LocalDate endDate = parseDate(to);
+        if (!endDate.isAfter(startDate)) {
+            throw new NovaException("An event's /to date must be after its /from date.");
+        }
+        return new Event(description, startDate, endDate);
     }
 
     private LocalDate parseDate(String value) throws NovaException {
